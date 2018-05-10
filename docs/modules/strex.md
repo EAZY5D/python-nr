@@ -1,4 +1,0 @@
-+++
-description = "String scanner/lexer."
-+++
-

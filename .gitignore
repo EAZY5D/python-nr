@@ -1,8 +1,0 @@
-.env/
-*.py[cod]
-*.egg-info
-__pycache__/
-docs/_build
-README.rst
-dist/
-build/

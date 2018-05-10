@@ -1,3 +1,0 @@
-tag v{VERSION}
-upgrade setup.py:  version='{VERSION}'
-sub docs/changelogs/v2.0.x.md:# v{VERSION} (unreleased):# v{VERSION} ({DATE})
