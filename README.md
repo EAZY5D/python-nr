@@ -1,8 +1,14 @@
 ## The `nr` namespace package
 
-This repository contains the `nr` Python namespace package. This package
-has no contents besides the common search path extension code, which is
-also placed in the `__init__.py` of every submodule/subpackage:
+This repository contains the `nr` Python namespace package. If you want to
+explore the packages available in this namespace, head to the
+[NiklasRosenstein-Python](https://github.com/NiklasRosenstein-Python) GitHub
+organization.
+
+---
+
+This package has no contents besides the common search path extension code,
+which is also placed in the `__init__.py` of every submodule/subpackage:
 
 ```python
 try:
