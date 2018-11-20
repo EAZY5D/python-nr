@@ -2,11 +2,8 @@
 import io
 import setuptools
 
-with io.open('README.md') as fp:
+with io.open('README.md', encoding='utf8') as fp:
   readme = fp.read()
-
-with io.open('requirements.txt') as fp:
-  requirements = fp.readlines()
 
 setuptools.setup(
   name = 'nr.version-upgrade',
