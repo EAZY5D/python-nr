@@ -1,21 +1,15 @@
 # nr.cli
 
-Install this module if you need access to any of the command-line tools
-provided by `nr` namespace packages.
+Provides the `nr` command-line tool which provides access to the entry-points
+registered to the `nr.cli:commands` group.
 
-### Example Usage
-
-```
-usage: nr [-h] [-l] [COMMAND [ARGS...]
-
-options:
-  -h, --help   display this help message
-  -l, --list-packages
-               display a list of packages that may contain additional
-               command-line tools and can be installed via Pip.
-```
 
 ### Changes
+
+#### v1.0.2
+
+* Use setuptools entrypoints instead of discovering commands by
+  walking the modules in the `nr` namespace.
 
 #### v1.0.1 (2018-07-05)
 

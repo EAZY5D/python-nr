@@ -1,6 +1,6 @@
-# `nr.ast`
+# nr.ast
 
-&ndash; Stuff related to the Python AST and code evaluation.
+Functions related to Python ASTs and code evaluation.
 
 ## Changelog
 

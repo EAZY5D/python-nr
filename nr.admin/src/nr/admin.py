@@ -290,9 +290,3 @@ def main(argv=None, prog=None):
     sys.exit(run_as_admin(unknown))
   else:
     parser.print_usage()
-
-
-_entry_point = lambda: sys.exit(main())
-
-if __name__ == '__main__':
-  _entry_point()

@@ -3,24 +3,25 @@ import setuptools
 import io
 
 with io.open('README.md', encoding='utf8') as fp:
-  readme = fp.read()
+  long_description = fp.read()
 
 setuptools.setup(
   name = 'nr.cli',
-  version = '1.0.1',
+  version = '1.0.2',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
-  description = 'The "nr" command-line tool handler.',
-  long_description = readme,
+  description = 'The command-line interface for tools in the "nr" libraries.',
+  long_description = long_description,
   long_description_content_type = 'text/markdown',
-  url = 'https://gitlab.niklasrosenstein.com/NiklasRosenstein/python/nr.cli',
+  url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.cli',
   license = 'MIT',
   namespace_packages = ['nr'],
   packages = setuptools.find_packages('src'),
   package_dir = {'': 'src'},
+  namespace_packages = ['nr'],
   entry_points = {
     'console_scripts': [
-      'nr = nr.cli.__main__:_entry_point'
+      'nr = nr.cli:main'
     ]
   }
 )

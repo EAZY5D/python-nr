@@ -2,11 +2,8 @@
 import io
 import setuptools
 
-with io.open('README.md') as fp:
-  readme = fp.read()
-
-with io.open('requirements.txt') as fp:
-  requirements = fp.readlines()
+with io.open('README.md', encoding='utf8') as fp:
+  long_description = fp.read()
 
 setuptools.setup(
   name = 'nr.parse',
@@ -14,12 +11,13 @@ setuptools.setup(
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'A simple text scanning/lexing/parsing library.',
-  long_description = readme,
+  long_description = long_description,
   long_description_content_type = 'text/markdown',
-  url = 'https://github.com/NiklasRosenstein-Python/nr.parse',
+  url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.parse',
   license = 'MIT',
   namespace_packages = ['nr'],
-  install_requires = requirements,
   packages = setuptools.find_packages('src'),
-  package_dir = {'': 'src'}
+  package_dir = {'': 'src'},
+  namespace_packages = ['nr'],
+  install_requires = ['nr.types>=1.0.0']
 )

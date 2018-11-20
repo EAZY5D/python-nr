@@ -16,5 +16,6 @@ setuptools.setup(
   url = 'https://github.com/NiklasRosenstein/python-nr',
   license = 'MIT',
   packages = setuptools.find_packages('src'),
-  package_dir = {'': 'src'}
+  package_dir = {'': 'src'},
+  namespace_packages = ['nr']
 )

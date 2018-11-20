@@ -3,7 +3,7 @@ import setuptools
 import io
 
 with io.open('README.md', encoding='utf8') as fp:
-  readme = fp.read()
+  long_description = fp.read()
 
 setuptools.setup(
   name = 'nr.stream',
@@ -11,11 +11,12 @@ setuptools.setup(
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Streaming iterators made easy in Python.',
-  long_description = readme,
+  long_description = long_description,
   long_description_content_type = 'text/markdown',
-  url = 'https://gitlab.niklasrosenstein.com/NiklasRosenstein/python/nr.stream',
+  url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.stream',
   license = 'MIT',
-  namespace_packages = ['nr'],
+  install_requires = ['six>=1.11.0'],
   packages = setuptools.find_packages('src'),
-  package_dir = {'': 'src'}
+  package_dir = {'': 'src'},
+  namespace_packages = ['nr']
 )

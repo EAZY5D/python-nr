@@ -1,4 +1,8 @@
-## `nr.c4d` &mdash; A Cinema 4D utility library.
+## nr.c4d
+
+A utility library for [Cinema 4D].
+
+  [Cinema 4D]: https://maxon.net
 
 ### Components
 

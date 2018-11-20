@@ -16,7 +16,7 @@ setuptools.setup(
   description = 'Anything related to Python datatypes.',
   long_description = readme,
   long_description_content_type = 'text/markdown',
-  url = 'https://gitlab.niklasrosenstein.com/NiklasRosenstein/python/nr.types',
+  url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.types',
   license = 'MIT',
   namespace_packages = ['nr'],
   packages = setuptools.find_packages('src'),

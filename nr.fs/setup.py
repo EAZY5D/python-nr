@@ -3,10 +3,7 @@ import io
 import setuptools
 
 with io.open('README.md', encoding='utf8') as fp:
-  readme = fp.read()
-
-with io.open('requirements.txt', encoding='utf8') as fp:
-  requirements = fp.readlines()
+  long_description = fp.read()
 
 setuptools.setup(
   name = 'nr.fs',
@@ -14,12 +11,12 @@ setuptools.setup(
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Filesystem and path manipulation tools.',
-  long_description = readme,
+  long_description = long_description,
   long_description_content_type = 'text/markdown',
-  url = 'https://gitlab.niklasrosenstein.com/NiklasRosenstein/python/nr.fs',
+  url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.fs',
   license = 'MIT',
-  namespace_packages = ['nr'],
   packages = setuptools.find_packages('src'),
   package_dir = {'': 'src'},
-  install_requires = requirements
+  namespace_packages = ['nr'],
+  install_requires = ['six>=1.11.0']
 )

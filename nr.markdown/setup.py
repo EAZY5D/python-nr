@@ -1,8 +1,9 @@
 
 import setuptools
+import io
 
-with open('requirements.txt') as fp:
-  requirements = fp.readlines()
+with io.open('requirements.txt', encoding='utf8') as fp:
+  long_description = fp.readlines()
 
 setuptools.setup(
   name = 'nr.markdown',
@@ -11,8 +12,11 @@ setuptools.setup(
   author_email = 'rosensteinniklas@gmail.com',
   license = 'MIT',
   description = 'Enhances the Misaka/Hoedown markdown parser.',
-  url = 'https://github.com/NiklasRosenstein/py-nr.markdown',
-  install_requires = requirements,
+  long_description = long_description,
+  long_description_content_type = 'text/markdown',
+  url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.markdown',
   packages = setuptools.find_packages('src'),
-  package_dir = {'': 'src'}
+  package_dir = {'': 'src'},
+  namespace_packages = ['nr'],
+  install_requires = ['bs4', 'Misaka', 'pygments']
 )

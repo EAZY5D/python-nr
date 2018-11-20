@@ -287,10 +287,3 @@ def main(argv=None, prog=None):
     return 0
   else:
     parser.error('no operation specified')
-
-
-_entry_point = lambda: sys.exit(main())
-
-
-if __name__ == '__main__':
-  sys.exit(main())
