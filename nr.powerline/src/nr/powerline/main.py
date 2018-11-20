@@ -15,7 +15,7 @@ def default_powerline():
   p.add_part(' {session.hostname} !{c.RIGHT_TRIANGLE}')
 
   p.set_pen('white', 'magenta', 'bold')
-  p.add_part(' {c.DIRECTORY}  {session.cwd} !{c.RIGHT_TRIANGLE}')
+  p.add_part(' {c.DIRECTORY} {session.cwd} !{c.RIGHT_TRIANGLE}')
 
   git = p.get_plugin('git')
   if git.project:
