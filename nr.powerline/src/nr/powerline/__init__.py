@@ -4,6 +4,7 @@ import pkg_resources
 import nr.parse
 import nr.types.sumtype as sumtype
 import re
+import six
 import termcolor
 
 PLUGINS_ENTRYPOINT = 'nr.powerline.plugins'
@@ -11,6 +12,7 @@ COLORMODE_ASCII = 'ascii'
 COLORMODE_TRUECOLOR = 'truecolor'
 
 
+@six.python_2_unicode_compatible
 class PowerLine(object):
 
   def __init__(self):
@@ -46,7 +48,7 @@ class PowerLine(object):
         result.append(self.get_color_transition_codes(pen, new_pen))
         pen = new_pen
     result.append(termcolor.RESET)
-    return ''.join(result)
+    return u''.join(result)
 
   @property
   def color_mode(self):
@@ -237,6 +239,6 @@ def render_format_string(fmt_string, values):
         value = getattr(value, part)
       except AttributeError:
         return '{' + m.group(1) + '}'
-    return str(value)
+    return six.text_type(value)
 
   return re.sub(expr, subst_func, fmt_string)

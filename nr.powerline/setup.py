@@ -18,7 +18,12 @@ setuptools.setup(
   packages = setuptools.find_packages('src'),
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
-  install_requires = ['termcolor'],
+  install_requires = [
+    'nr.parse>=1.0.1',
+    'nr.types>=1.1.1',
+    'six',
+    'termcolor',
+  ],
   entry_points = {
     'nr.powerline.plugins': [
       'c = nr.powerline.plugins.characters:CharactersPlugin',

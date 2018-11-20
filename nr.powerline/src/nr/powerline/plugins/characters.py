@@ -1,4 +1,5 @@
 
+from six import unichr
 from nr.powerline.plugins import Plugin
 
 
@@ -22,6 +23,6 @@ class CharactersPlugin(Plugin):
 
   def __getattr__(self, name):
     try:
-      return chr(self.CHARACTERS[name])
+      return unichr(self.CHARACTERS[name])
     except KeyError:
       raise AttributeError(name)
