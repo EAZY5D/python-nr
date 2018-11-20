@@ -2,6 +2,8 @@
 
 Simple powerline module. Use with [NerdFonts](https://nerdfonts.com/#downloads)
 
+![](https://i.imgur.com/BNpDHhZ.png)
+
 __Todolist__
 
 - Truecolor support
