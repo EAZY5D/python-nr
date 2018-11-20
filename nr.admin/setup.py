@@ -19,7 +19,7 @@ setuptools.setup(
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
   entry_points = {
-    'nr.cli:commands': [
+    'nr.cli.commands': [
       'admin = nr.admin:main'
     ]
   }

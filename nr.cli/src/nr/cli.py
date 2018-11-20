@@ -30,13 +30,13 @@ import sys
 __author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
 __version__ = '1.0.2'
 
-ENTRYPOINT_GROUP = 'nr.cli:commands'
+ENTRYPOINT_GROUP = 'nr.cli.commands'
 
 
 def main(argv=None, prog=None):
-  parser = argparse.ArgumentParser()
+  parser = argparse.ArgumentParser(prog=prog)
   parser.add_argument('command', nargs='?')
-  args, argv = parser.parse_known_args()
+  args, argv = parser.parse_known_args(argv)
 
   if not args.command:
     for ep in pkg_resources.iter_entry_points(ENTRYPOINT_GROUP):
@@ -48,4 +48,4 @@ def main(argv=None, prog=None):
     parser.error('unknown command "{}"'.format(args.command))
 
   function = ep.load()
-  sys.exit(function(argv, '{} {}'.format(prog, argv[0])))
+  sys.exit(function(argv, '{} {}'.format(parser.prog, args.command)))

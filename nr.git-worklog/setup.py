@@ -20,7 +20,7 @@ setuptools.setup(
   namespace_packages = ['nr'],
   install_requires = ['nr.cli>=1.0.2'],
   entry_points = {
-    'nr.cli:commands': [
+    'nr.cli.commands': [
       'git-worklog = nr.git_worklog.main:main'
     ]
   }

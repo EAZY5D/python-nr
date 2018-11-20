@@ -23,7 +23,7 @@ setuptools.setup(
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
   entry_points = {
-    'nr.cli:commands': [
+    'nr.cli.commands': [
       'version-upgrade = nr.version_upgrade:main'
     ]
   }

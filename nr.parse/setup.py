@@ -15,7 +15,6 @@ setuptools.setup(
   long_description_content_type = 'text/markdown',
   url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.parse',
   license = 'MIT',
-  namespace_packages = ['nr'],
   packages = setuptools.find_packages('src'),
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],

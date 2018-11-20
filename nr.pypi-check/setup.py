@@ -20,7 +20,7 @@ setuptools.setup(
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
   entry_points = {
-    'nr.cli:commands': [
+    'nr.cli.commands': [
       'pypi-check = nr.pypi_check:main'
     ]
   }

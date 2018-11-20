@@ -1,7 +1,7 @@
 # nr.cli
 
 Provides the `nr` command-line tool which provides access to the entry-points
-registered to the `nr.cli:commands` group.
+registered to the `nr.cli.commands` group.
 
 
 ### Changes

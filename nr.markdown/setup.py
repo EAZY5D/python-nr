@@ -2,8 +2,8 @@
 import setuptools
 import io
 
-with io.open('requirements.txt', encoding='utf8') as fp:
-  long_description = fp.readlines()
+with io.open('README.md', encoding='utf8') as fp:
+  long_description = fp.read()
 
 setuptools.setup(
   name = 'nr.markdown',

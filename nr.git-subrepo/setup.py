@@ -15,13 +15,12 @@ setuptools.setup(
   long_description_content_type = 'text/markdown',
   url = 'https://github.com/NiklasRosenstein/python-nr/tree/master/nr.git-subrepo',
   license = 'MIT',
-  namespace_packages = ['nr'],
   packages = setuptools.find_packages('src'),
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
   install_requires = ['nr.cli>=1.0.2'],
   entry_points = {
-    'nr.cli:commands': [
+    'nr.cli.commands': [
       'git-subrepo = nr.git_subrepo:main'
     ]
   }
