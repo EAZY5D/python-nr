@@ -29,8 +29,7 @@ def default_powerline():
   p.add_part(' {time.now} !{c.RIGHT_TRIANGLE}')
 
   p.clear_pen()
-
-  print(p, end='')
+  p.print_()
 
 
 def main(argv=None, prog=None):

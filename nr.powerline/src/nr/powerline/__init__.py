@@ -1,10 +1,12 @@
 
 import copy
+import os
 import pkg_resources
 import nr.parse
 import nr.types.sumtype as sumtype
 import re
 import six
+import sys
 import termcolor
 
 PLUGINS_ENTRYPOINT = 'nr.powerline.plugins'
@@ -116,6 +118,12 @@ class PowerLine(object):
       for attr in pen.attrs:
         result += '\033[%dm' % termcolor.ATTRIBUTES.get(attr, '')
     return result
+
+  def print_(self):
+    if os.name == 'nt':
+      sys.stdout.buffer.write(str(self).encode('utf8'))
+    else:
+      print(str(self), end='')
 
 
 class Pen(object):
