@@ -7,6 +7,8 @@ Simple powerline module. Use with [NerdFonts](https://nerdfonts.com/#downloads)
 __Todolist__
 
 - Truecolor support
+- Breadcrumb CWD
+- Allow passing previous exit status as argument (`nr powerline $?`)
 
 ### Plugins
 
