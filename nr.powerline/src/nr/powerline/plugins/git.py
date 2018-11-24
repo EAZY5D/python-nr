@@ -1,5 +1,6 @@
 
 import os
+import re
 import subprocess
 
 from nr.powerline.plugins import Plugin, cached_property
@@ -28,6 +29,6 @@ class GitPlugin(Plugin):
 
   @cached_property
   def branch(self):
-    branches = [x.strip() for x in get_output('git branch').split(' ')]
+    branches = [x.strip() for x in re.split('\s+', get_output('git branch'))]
     index = branches.index('*')
     return branches[index+1]
