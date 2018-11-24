@@ -28,4 +28,6 @@ class GitPlugin(Plugin):
 
   @cached_property
   def branch(self):
-    return get_output('git branch').split(' ')[-1].strip()
+    branches = [x.strip() for x in get_output('git branch').split(' ')]
+    index = branches.index('*')
+    return branches[index+1]
