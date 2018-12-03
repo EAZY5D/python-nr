@@ -9,22 +9,22 @@ def default_powerline():
 
   p = PowerLine()
 
-  p.set_pen('whit ', 'blue', 'bold')
-  p.add_part(' {session.hostname} !{c.RIGHT_TRIANGLE}')
+  #p.set_pen('whit ', 'blue', 'bold')
+  #p.add_part(' {session.hostname} !{c.RIGHT_TRIANGLE}')
 
-  p.set_pen('white', 'cyan', 'bold')
-  p.add_part(' {c.DIRECTORY} {session.cwd} !{c.RIGHT_TRIANGLE}')
+  p.set_pen('white', 'blue', 'bold')
+  p.add_part(' {session.cwd} !{c.RIGHT_TRIANGLE}')
 
   git = p.get_plugin('git')
   if git.project:
-    p.set_pen(None, 'blue', 'bold')
-    p.add_part(' {c.USER} {git.user} !{c.RIGHT_TRIANGLE}')
+    #p.set_pen(None, 'blue', 'bold')
+    #p.add_part('  !{c.RIGHT_TRIANGLE}')
 
     p.set_pen(None, 'cyan', 'bold')
-    p.add_part(' {c.BRANCH} {git.branch} !{c.RIGHT_TRIANGLE}')
+    p.add_part(' {c.BRANCH} {git.branch} {c.USER} {git.user} !{c.RIGHT_TRIANGLE}')
 
-  p.set_pen('white', 'yellow', 'bold')
-  p.add_part(' {time.now} !{c.RIGHT_TRIANGLE}')
+  #p.set_pen('white', 'yellow', 'bold')
+  #p.add_part(' {time.now} !{c.RIGHT_TRIANGLE}')
 
   p.clear_pen()
   p.print_()
