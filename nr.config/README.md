@@ -21,6 +21,12 @@ assert dump(AuthConfig, config) == data
 
 ### Changelog
 
+#### v1.0.2 (2019-03-21)
+
+* Add `nr.types>=1.1.0` dependency
+* Use `yaml.safe_load()` in `nr.config.extract()` if possible
+* Use `OrderedDict` with `json.load()`
+
 #### v1.0.1 (2019-03-21)
 
 * Fix Python 3 compatibility in GenericTypeHandler

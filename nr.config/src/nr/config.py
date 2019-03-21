@@ -4,6 +4,7 @@ This module implements a class-oriented API for defining configuration parsers.
 """
 
 from nr.stream import stream
+from nr.types.map import OrderedDict
 import copy
 import six
 import weakref
@@ -14,7 +15,7 @@ except ImportError: typing = None
 try: from collections.abc import Mapping, Sequence
 except ImportError: from collections import Mapping, Sequence
 
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
 
 PARTIAL_FIELDS = '_fields_'
@@ -576,13 +577,13 @@ def extract(type_decl, arg, filename=None, data=None, handler_collection=None):
       # TODO @nrosenstein Load objects into ordered dicts.
       if filename.endswith('.yml') or filename.endswith('.yaml'):
         import yaml
-        data = yaml.load(fp)
+        data = getattr(yaml, 'safe_load', yaml.load)(fp)
       elif filename.endswith('.cson'):
         import cson
         data = cson.load(fp)
       else:
         import json
-        data = json.load(fp)
+        data = json.load(fp, object_pairs_hook=OrderedDict)
 
   if handler_collection is None:
     handler_collection = root_handler_collection
