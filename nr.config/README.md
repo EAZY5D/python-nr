@@ -16,5 +16,15 @@ class AuthConfig(Partial):
 data = {'authorized-users': [{'name': 'me', 'realm': 'sso'}]}
 config = extract(AuthConfig, data)
 print(config.authorized_users[0].name)
-assert dump(config) == data
+assert dump(AuthConfig, config) == data
 ```
+
+### Changelog
+
+#### v1.0.1 (2019-03-21)
+
+* Fix Python 3 compatibility in GenericTypeHandler
+
+#### v1.0.0 (2019-03-21)
+
+* Initial version

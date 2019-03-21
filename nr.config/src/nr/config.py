@@ -14,7 +14,7 @@ except ImportError: typing = None
 try: from collections.abc import Mapping, Sequence
 except ImportError: from collections import Mapping, Sequence
 
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
 
 PARTIAL_FIELDS = '_fields_'
@@ -208,19 +208,19 @@ class GenericTypeHandler(TypeHandler):
 
   @classmethod
   def match(self, type_decl):
-    if typing is not None:
+    base_type = NotImplemented
+    if base_type is NotImplemented and typing is not None:
       origin = getattr(type_decl, '__origin__', type_decl)
       mapping = {typing.List: list, typing.Tuple: tuple, typing.Dict: dict}
-      if origin not in origin:
-        return None
-      base_type = mapping[origin]
-      arg1, arg2 = (tuple(type_decl.__args__) + (None,))[:2]
-    elif isinstance(type_decl, (list, tuple)):
+      if origin in mapping:
+        base_type = mapping[origin]
+        arg1, arg2 = (tuple(type_decl.__args__) + (None,))[:2]
+    if base_type is NotImplemented and isinstance(type_decl, (list, tuple)):
       if not type_decl or len(type_decl) > 3:
         return None
       base_type, arg1 = type_decl[:2]
       arg2 = type_decl[2] if len(type_decl) == 3 else None
-    else:
+    if base_type is NotImplemented:
       return None
     return self(base_type, arg1, arg2)
 
