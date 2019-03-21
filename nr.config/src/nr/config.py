@@ -14,6 +14,9 @@ except ImportError: typing = None
 try: from collections.abc import Mapping, Sequence
 except ImportError: from collections import Mapping, Sequence
 
+__version__ = '1.0.0'
+__author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
+
 PARTIAL_FIELDS = '_fields_'
 PARTIAL_FIELDS_DICT = '_fields_dict_'
 
