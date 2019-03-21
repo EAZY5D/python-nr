@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 __author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 
 import functools
@@ -34,7 +34,7 @@ except NameError:
   pass
 
 
-class _dualmethod:
+class _dualmethod(object):
   """
   A combination of #classmethod() and instance methods. Methods decorated
   with this class can be called from the class and instance level. The first
@@ -52,7 +52,7 @@ class _dualmethod:
     return functools.partial(self.func, owner)
 
 
-class stream:
+class stream(object):
   """
   A wrapper for iterables that provides the stream processor functions of
   this module in an object-oriented interface.
@@ -196,11 +196,12 @@ class stream:
   def slice(cls, iterable, *args, **kwargs):
     return cls(itertools.islice(iterable, *args, **kwargs))
 
-  def first(self):
-    return next(iter(self))
+  @_dualmethod
+  def first(cls, iterable):
+    return next(iter(iterable))
 
   @_dualmethod
-  def count(cls, iterable):
+  def length(cls, iterable):
     """
     Returns the number of items in an iterable.
     """
@@ -214,6 +215,8 @@ class stream:
         break
       count += 1
     return count
+
+  count = length  # deprecated
 
   @_dualmethod
   def consume(cls, iterable, n=None):

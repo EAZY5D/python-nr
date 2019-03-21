@@ -7,7 +7,7 @@ with io.open('README.md', encoding='utf8') as fp:
 
 setuptools.setup(
   name = 'nr.stream',
-  version = '1.0.2',
+  version = '1.0.3',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Streaming iterators made easy in Python.',
