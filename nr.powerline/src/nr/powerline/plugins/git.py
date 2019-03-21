@@ -30,5 +30,9 @@ class GitPlugin(Plugin):
   @cached_property
   def branch(self):
     branches = [x.strip() for x in re.split('\s+', get_output('git branch'))]
-    index = branches.index('*')
-    return branches[index+1]
+    try:
+      index = branches.index('*')
+    except ValueError:
+      return 'master'
+    else:
+      return branches[index+1]
