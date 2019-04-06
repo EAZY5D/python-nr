@@ -27,9 +27,10 @@ A simple implementation of an ordered set.
 __all__ = ['OrderedSet']
 
 import collections
+from . import abc
 
 
-class OrderedSet(collections.MutableSet):
+class OrderedSet(abc.MutableSet):
 
   def __init__(self, iterable=None):
     self._index_map = {}

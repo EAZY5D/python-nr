@@ -31,12 +31,13 @@ __all__ = [
 
 import collections
 import six
-from . import generic
+from . import abc, generic
 
 try:
   from collections import OrderedDict
 except ImportError:
   from ._ordereddict import OrderedDict
+
 
 if six.PY2:
   _can_iteritems = lambda x: hasattr(x, 'iteritems')
@@ -46,7 +47,7 @@ else:
   _can_iterkeys = lambda x: hasattr(x, 'keys')
 
 
-class ObjectAsMap(collections.MutableMapping):
+class ObjectAsMap(abc.MutableMapping):
   """
   This class wraps an object and exposes its members as mapping.
   """
@@ -147,7 +148,7 @@ class MapAsObject(object):
       return '<MapAsObject {!r}>'.format(self.__mapping)
 
 
-class ChainMap(collections.MutableMapping):
+class ChainMap(abc.MutableMapping):
   """
   A dictionary that wraps a list of dictionaries. The dictionaries passed
   into the #ChainMap will not be mutated. Setting and deleting values will
@@ -383,7 +384,7 @@ class HashDict(generic.Generic['key_hash']):
     return self._dict.setdefault(key, value)
 
 
-class ValueIterableMap(collections.MutableMapping):
+class ValueIterableMap(abc.MutableMapping):
   """
   Just like any other map, but iterating over the map will yield the values
   instead of the keys. This is useful for lookup-maps where the values contain

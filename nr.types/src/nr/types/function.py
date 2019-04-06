@@ -28,9 +28,9 @@ related to the Python function type like artificial function closure creation.
 
 __all__ = ['new_closure_cell', 'new_closure', 'replace_closure']
 
-import collections
 import functools
 import types
+from . import abc
 
 
 def new_closure_cell(x):
@@ -98,7 +98,7 @@ def replace(function, code=None, globals=None, name=None,
   if closure is None:
     closure = function.__closure__
   else:
-    if isinstance(closure, collections.Mapping):
+    if isinstance(closure, abc.Mapping):
       closure = [
         closure.get(x, function.__closure__[i].cell_contents)
         for i, x in enumerate(function.__code__.co_freevars)]

@@ -1,5 +1,4 @@
 
-from nose.tools import *
 from nr.types.named import Named
 
 

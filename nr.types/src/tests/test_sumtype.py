@@ -1,5 +1,4 @@
 
-from nose.tools import *
 from nr.types import Sumtype
 
 
@@ -27,5 +26,5 @@ def test_sumtypes():
   assert not x.is_ok()
   assert hasattr(x, 'alert')
   assert not hasattr(x, 'static_error_member')
-  assert_equals(x.alert(), 'Progress: 0.5')
-  assert_equals(x.progress, 0.5)
+  assert x.alert() == 'Progress: 0.5'
+  assert x.progress == 0.5

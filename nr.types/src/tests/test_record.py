@@ -19,7 +19,6 @@
 # THE SOFTWARE.
 
 from nr.types import Record
-from nose.tools import *
 
 
 def test_class_style():
@@ -34,7 +33,7 @@ def test_function_style():
 
 def _test_record(MyRecord):
   data = MyRecord('the-foo', 42, ham="spam")
-  assert_equals(data.foo, 'the-foo')
-  assert_equals(data.bar, 42)
-  assert_equals(data.ham, 'spam')
-  assert_equals(data.egg, 'yummy')
+  assert data.foo == 'the-foo'
+  assert data.bar == 42
+  assert data.ham == 'spam'
+  assert data.egg == 'yummy'

@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from nose.tools import *
 from nr.types.map import ChainMap, MapAsObject
 
 
@@ -30,40 +29,40 @@ def test_ChainDict():
   c = {}
   d = ChainMap({}, a, b, c)
 
-  assert_equals(str(d), 'ChainMap({})'.format({'foo': 42, 'bar': 'spam'}))
-  assert_equals(d['foo'], a['foo'])
-  assert_equals(d['bar'], b['bar'])
-  assert_equals(sorted(d.keys()), ['bar', 'foo'])
+  assert str(d) == 'ChainMap({})'.format({'foo': 42, 'bar': 'spam'})
+  assert d['foo'] == a['foo']
+  assert d['bar'] == b['bar']
+  assert sorted(d.keys()) == ['bar', 'foo']
 
   d['hello'] = 'World'
-  assert_equals(a, {'foo': 42})
-  assert_equals(b, {'bar': 'spam'})
-  assert_equals(c, {})
-  assert_equals(d, {'foo': 42, 'bar': 'spam', 'hello': 'World'})
+  assert a == {'foo': 42}
+  assert b == {'bar': 'spam'}
+  assert c == {}
+  assert d == {'foo': 42, 'bar': 'spam', 'hello': 'World'}
 
   del d['foo']
-  assert_equals(a, {'foo': 42})
-  assert_equals(b, {'bar': 'spam'})
-  assert_equals(c, {})
-  assert_equals(d, {'bar': 'spam', 'hello': 'World'})
+  assert a == {'foo': 42}
+  assert b == {'bar': 'spam'}
+  assert c == {}
+  assert d == {'bar': 'spam', 'hello': 'World'}
 
   d['foo'] = 99
-  assert_equals(a, {'foo': 42})
-  assert_equals(b, {'bar': 'spam'})
-  assert_equals(c, {})
-  assert_equals(d, {'foo': 99, 'bar': 'spam', 'hello': 'World'})
+  assert a == {'foo': 42}
+  assert b == {'bar': 'spam'}
+  assert c == {}
+  assert d == {'foo': 99, 'bar': 'spam', 'hello': 'World'}
 
   d.clear()
-  assert_equals(a, {'foo': 42})
-  assert_equals(b, {'bar': 'spam'})
-  assert_equals(c, {})
-  assert_equals(d, {})
+  assert a == {'foo': 42}
+  assert b == {'bar': 'spam'}
+  assert c == {}
+  assert d == {}
 
 
 def test_ObjectFromMapping():
   d = ChainMap({'a': 42, 'b': 'foo'}, {'c': 'egg'})
   o = MapAsObject(d)
-  assert_equals(o.a, 42)
-  assert_equals(o.b, 'foo')
-  assert_equals(o.c, 'egg')
-  assert_equals(dir(o), ['a', 'b', 'c'])
+  assert o.a == 42
+  assert o.b == 'foo'
+  assert o.c == 'egg'
+  assert dir(o), ['a', 'b', 'c']
