@@ -90,6 +90,18 @@ class stream(object):
     return cls(func(x, *a, **kw) for x in iterable)
 
   @_dualmethod
+  def flatmap(cls, iterable, func):
+    """
+    Same as #map() but flattens the result.
+    """
+
+    def generator():
+      for x in iterable:
+        for y in func(x):
+          yield y
+    return cls(generator())
+
+  @_dualmethod
   def filter(cls, iterable, cond, *a, **kw):
     """
     Iterable-first replacement of Python's built-in `filter()` function.
@@ -233,3 +245,16 @@ class stream(object):
         except StopIteration:
           break
     return iterable
+
+  @_dualmethod
+  def collect(cls, iterable, collect_cls=None):
+    return (collect_cls or list)(iterable)
+
+
+# Expose all members of the #stream class to the global scope.
+for _key in dir(stream):
+  _value = getattr(stream, _key)
+  if not _key.startswith('_'):
+    globals()[_key] = _value
+
+del _key, _value
