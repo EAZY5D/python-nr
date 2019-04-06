@@ -7,7 +7,7 @@ with io.open('README.md', encoding='utf8') as fp:
 
 setuptools.setup(
   name = 'nr.config',
-  version = '1.0.2',
+  version = '1.0.3',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Model-orientated configuration extractor.',

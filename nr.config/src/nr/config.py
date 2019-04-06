@@ -15,7 +15,7 @@ except ImportError: typing = None
 try: from collections.abc import Mapping, Sequence
 except ImportError: from collections import Mapping, Sequence
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
 
 PARTIAL_FIELDS = '_fields_'
@@ -459,6 +459,9 @@ class Partial(six.with_metaclass(_PartialMeta)):
     d = {f.dest: getattr(self, f.dest) for f in fields}
     return '{}({})'.format(type(self).__name__, d)
 
+  def as_dict(self):
+    return {k.name: getattr(self, k.dest) for k in getattr(type(self), PARTIAL_FIELDS)}
+
 
 class PartialTypeHandler(TypeHandler):
 
@@ -554,7 +557,8 @@ register_type_handler(GenericTypeHandler)
 register_type_handler(PartialTypeHandler)
 
 
-def extract(type_decl, arg, filename=None, data=None, handler_collection=None):
+def extract(type_decl, arg, kwargs=None, filename=None, data=None,
+            handler_collection=None):
   """
   A convenient function that loads a JSON, CSON or YAML configuration file
   (based on the file suffix, falling back to JSON) and loads it using
@@ -562,6 +566,14 @@ def extract(type_decl, arg, filename=None, data=None, handler_collection=None):
 
   The *arg* will be treated as the *filename* if it is a string or
   otherwise as the *data* parameter.
+
+  If *kwargs* is specified, it can define overrides for the values in *arg*.
+  Note that this simply overrides the respective value and does not perform
+  any kind of merging.
+
+  If *arg* is already an instance of the *type_decl* it will be returned as-is
+  unless *kwargs* is specified in which case the partial is converted back to
+  a dictionary, updated with *kwargs* and then re-parsed.
   """
 
   if arg is not None:
@@ -590,6 +602,11 @@ def extract(type_decl, arg, filename=None, data=None, handler_collection=None):
 
   context = Context(None, None, filename=filename,
     handler_collection=handler_collection)
+
+  if issubclass(type_decl, Partial) and isinstance(data, type_decl) and kwargs:
+    data = data.as_dict()
+    data.update(kwargs)
+
   return handler_collection.load(type_decl, data, context)
 
 

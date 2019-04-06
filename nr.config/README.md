@@ -21,6 +21,12 @@ assert dump(AuthConfig, config) == data
 
 ### Changelog
 
+#### v1.0.3 (2019-04-06)
+
+* `extract()` now accepts an optional *kwargs* parameter that overrides
+  the top-level values of the input data
+* add `Partial.as_dict()`
+
 #### v1.0.2 (2019-03-21)
 
 * Add `nr.types>=1.1.0` dependency
