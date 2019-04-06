@@ -1,6 +1,7 @@
 
 import nr.interface
-from nose.tools import *
+import pytest
+
 
 def test_multi_implementation():
 
@@ -47,19 +48,19 @@ def test_multi_implementation():
 
   obj = MyParameters()
 
-  assert_true(obj.implements(ParameterInterface))
-  assert_equals(obj.params['depth'], 32)
+  assert obj.implements(ParameterInterface)
+  assert obj.params['depth'] == 32
 
-  assert_true(obj.implements(CalculateInterface))
-  assert_equals(obj.inputs, ['foo'])
-  assert_equals(obj.outputs, {'bar': 'spam'})
+  assert obj.implements(CalculateInterface)
+  assert obj.inputs == ['foo']
+  assert obj.outputs == {'bar': 'spam'}
 
-  assert_equals(obj.calculate_prop, 'Foobar!')
+  assert obj.calculate_prop == 'Foobar!'
   value = []
   obj.calculate_prop = value
-  assert_equals(value, [True])
+  assert value == [True]
 
-  assert_equals(obj.final_method(), 'Bar')
+  assert obj.final_method() == 'Bar'
 
 
 class AFinalInterface(nr.interface.Interface):
@@ -75,7 +76,7 @@ class BFinalInterface(nr.interface.Interface):
 
 
 def test_final():
-  with assert_raises(nr.interface.ImplementationError):
+  with pytest.raises(nr.interface.ImplementationError):
     # Can not implement final_method().
     class Test(nr.interface.Implementation):
       nr.interface.implements(AFinalInterface)
@@ -84,6 +85,6 @@ def test_final():
 
 
 def test_conflict():
-  with assert_raises(nr.interface.ConflictingInterfacesError):
+  with pytest.raises(nr.interface.ConflictingInterfacesError):
     class Test(nr.interface.Implementation):
       nr.interface.implements(AFinalInterface, BFinalInterface)
