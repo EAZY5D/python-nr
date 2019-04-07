@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2018 Niklas Rosenstein
+# Copyright (c) 2019 Niklas Rosenstein
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,189 +20,266 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-class Record(object):
+from . import abc
+from .maps import OrderedDict
+from .meta import InlineMetaclassBase
+from .notset import NotSet
+from six import iteritems, itervalues
+
+import inspect
+import six
+import types
+
+
+class Field(object):
   """
-  This class can be considered a new base for all classes that implement
-  the `__slots__` interface. It provides convenient methods to treat the
-  class instances like mutable versions of #:collections.namedtuple.
+  Represents a field of a #Record class. Fields have a name, type and
+  a default value. If a field has no name, it is "unbound" and the name
+  may be derived from the name the field was assigned to in the #Record
+  subclass declaration.
+  """
 
-  # Example
+  _global_create_index = 0
+
+  def __init__(self, type, default=NotSet):
+    self.name = None
+    self.type = type
+    self.default = default
+    self.create_index = Field._global_create_index
+    Field._global_create_index += 1
+
+  def __repr__(self):
+    return 'Field(name={!r}, type={!r}, default={!r})'.format(
+      self.name, self.type, self.default)
+
+  def get_default(self):
+    if self.default is NotSet:
+      raise RuntimeError('Field.default is NotSet')
+    if isinstance(self.default, types.LambdaType):
+      return self.default()
+    return self.default
+
+  @classmethod
+  def with_name(cls, name, type, default=NotSet):
+    obj = cls(type, default)
+    obj.name = name
+    return obj
+
+
+def compile_fields(decl):
+  """
+  Compiles a fields declaration to an #OrderedDict mapping to #Field objects.
+  A fields declaration can be a dictionary or list.
+
+  For a list:
+
+  * Field
+  * Tuple[str, Type] (name, type)
+  * Tuple[str, Type, Union[LambdaType, Any]] (name, type, default)
+
+  For a dictionary:
+
+  * Field
+  * Tuple[Type, Union[LambdaType, Any]] (type, default)
+  * Type
+  """
+
+  # Convert a mapping to the list form.
+  if isinstance(decl, abc.Mapping):
+    new_decl = []
+    for key, value in iteritems(decl):
+      if isinstance(value, tuple):
+        value = (key,) + value
+      elif isinstance(value, Field):
+        value.name = key
+      else:
+        value = (key, value)
+      new_decl.append(value)
+    decl = new_decl
+
+  compiled_fields = OrderedDict()
+  for item in decl:
+    if isinstance(item, Field):
+      field = item
+    elif isinstance(item, tuple):
+      if len(item) == 1:
+        name, type_, default = item[0], None, NotSet
+      elif len(item) == 2:
+        name, type_, default = item[0], item[1], NotSet
+      elif len(item) == 3:
+        name, type_, default = item
+      else:
+        raise ValueError('invalid tuple Field declaration: {!r}'.format(item))
+      field = Field.with_name(name, type_, default)
+    else:
+      raise TypeError('unexpected Field declaration: {!r}'.format(item))
+    if not field.name:
+      raise ValueError('unbound Field found: {!r}'.format(field.name))
+    if field.name in compiled_fields:
+      raise ValueError('duplicate Field name: {!r}'.format(field.name))
+    compiled_fields[field.name] = field
+
+  return compiled_fields
+
+
+class CleanRecord(InlineMetaclassBase):
+  """
+  A base-class similar to #typing.NamedTuple, but mutable. Fields can be
+  specified using Python 3.6 class-member annotations, by setting the
+  `__annotations__` or `__fields__` member to a list of annotations or
+  by declaring class-members as #Field objects.
+
+  In the following example all four `Person` declarations are identical.
+
   ```python
-  class MyRecord(Record):
-    __slots__ = 'foo bar ham egg'.split()
-    __defaults__ = {'egg': 'yummy'}
-  # or
-  MyRecord = Record.new('MyRecord', 'foo bar ham', egg='yummy')
+  class Person(Record):
+    mail: str
+    name: str = lambda: random_name()
+    age: int = 0
 
-  data = MyRecord('the-foo', 42, ham="spam")
-  assert data.egg = 'yummy'
+  class Persom(Record):
+    __fields__ = [
+      ('mail', str),
+      ('name', str, lambda: random_name()),
+      ('age', int, 0)
+    ]
+
+  class Person(Record):
+    mail = Field(str)
+    name = Field(str, lambda: random_name())
+    age = Field(str, 0)
+
+  Person = create_record('Person', [
+    ('mail', str),
+    Field.with_name('name', str, lambda: random_name()),
+    ('age', int, 0)
+  ])
   ```
   """
 
+  def __metainit__(self, name, bases, dict):
+    """
+    Overrides #InlineMetaclassBase.__metainit__(). Converts the fields or
+    annotations defined on the class to a common dictionary representation.
+    The source of the fields is determined in the following order:
+
+    * Attribute `__fields__`
+    * Attribute `__annotations__`
+    * Member attributes (only #Field instances)
+    """
+
+    # Determine the source for the field declaration.
+    if '__fields__' in dict:
+      fields = dict['__fields__']
+    elif '__annotations__' in dict:
+      fields = dict['__annotations__']
+      if isinstance(fields, dict):
+        for key, value in iteritems(fields):
+          fields[key] = (value, getattr(self, key, NotSet))
+    else:
+      fields = []
+      for key, value in iteritems(dict):
+        if isinstance(value, Field):
+          fields.append(key, value)
+
+    # Merge with parent class fields.
+    mro_fields = {}
+    for base in reversed(bases):
+      if hasattr(base, '__fields__'):
+        mro_fields.update(base.__fields__)
+    mro_fields.update(compile_fields(fields))
+
+    for name, field in iteritems(mro_fields):
+      if name != field.name:
+        raise ValueError('mismatching Field name: name({!r}) != Field.name({!r})'
+          .format(name, field.name))
+
+    self.__fields__ = mro_fields
+    self.__ifields__ = sorted(itervalues(mro_fields),
+      key=lambda x: x.create_index)
+
   def __init__(self, *args, **kwargs):
-    defaults = getattr(self, '__defaults__', None) or {}
-    if len(args) > len(self.__slots__):
-      msg = '__init__() takes {0} positional arguments but {1} were given'
-      raise TypeError(msg.format(len(self.__slots__), len(args)))
-    for key, arg in zip(self.__slots__, args):
-      if key in kwargs:
-        msg = 'multiple values for argument {0!r}'.format(key)
-        raise TypeError(msg)
-      kwargs[key] = arg
-    for key, arg in kwargs.items():
-      setattr(self, key, arg)
-    for key in self.__slots__:
-      if key not in kwargs:
-        if key in defaults:
-          setattr(self, key, defaults[key])
-        else:
-          raise TypeError('missing argument {0!r}'.format(key))
-      else:
-        kwargs.pop(key)
-    if kwargs:
-      msg = '__init__() got an unexpected keyword argument {0!r}'
-      raise TypeError(msg.format(next(iter(kwargs))))
+    fields = self.__fields__
+    type_name = type(self).__name__
+
+    # Validate number of arguments.
+    nargs = len(args) + len(kwargs)
+    if nargs > len(fields):
+      raise TypeError('{}() expected at most {} arguments, got {}'
+        .format(type_name, len(fields), nargs))
+
+    # Raise an exception for any unknown keyword arguments.
+    for key in kwargs:
+      if key not in fields:
+        raise TypeError('{}() unexpected keyword argument "{}"'
+          .format(type_name, key))
+
+    # Map positional arguments to keyword arguments.
+    for arg, (name, field) in zip(args, iteritems(fields)):
+      if name in kwargs:
+        raise TypeError('{}() got duplicate argument "{}"'
+          .format(type_name, name))
+      kwargs[name] = arg
+
+    # Create attributes.
+    for key, field in iteritems(fields):
+      value = kwargs.get(key, NotSet)
+      if value is NotSet:
+        if field.default is NotSet:
+          raise TypeError('{}() missing argument "{}"'.format(type_name, key))
+        value = field.get_default()
+      setattr(self, key, value)
 
   def __repr__(self):
-    parts = ['{0}={1!r}'.format(k, v) for k, v in self.items()]
-    return '{0}('.format(type(self).__name__) + ', '.join(parts) + ')'
+    members = ', '.join('{}={!r}'.format(k, getattr(self, k)) for k in self.__fields__)
+    return '{}({})'.format(type(self).__name__, members)
+
+
+class Record(CleanRecord):
+  """
+  Adds namedtuple style methods like item access, iterating and #as_dict().
+  """
 
   def __iter__(self):
-    """
-    Iterate over the values of the record in order.
-    """
-
-    for key in self.__slots__:
+    for key in self.__fields__:
       yield getattr(self, key)
 
   def __len__(self):
-    """
-    Returns the number of slots in the record.
-    """
+    return len(self.__fields__)
 
-    return len(self.__slots__)
-
-  def __getitem__(self, index_or_key):
-    """
-    Read the value of a slot by its index or name.
-
-    :param index_or_key:
-    :raise TypeError:
-    :raise IndexError:
-    :raise KeyError:
-    """
-
-    if isinstance(index_or_key, int):
-      return getattr(self, self.__slots__[index_or_key])
-    elif isinstance(index_or_key, str):
-      if index_or_key not in self.__slots__:
-        raise KeyError(index_or_key)
-      return getattr(self, index_or_key)
+  def __getitem__(self, index):
+    if hasattr(index, '__index__'):
+      return getattr(self, self.__ifields__[index.__index__()].name)
+    elif isinstance(index, str):
+      return getattr(self, str)
     else:
-      raise TypeError('expected int or str')
+      raise TypeError('cannot index with {} object'
+        .format(type(index).__name__))
 
-  def __setitem__(self, index_or_key, value):
-    """
-    Set the value of a slot by its index or name.
-
-    :param index_or_key:
-    :raise TypeError:
-    :raise IndexError:
-    :raise KeyError:
-    """
-
-    if isinstance(index_or_key, int):
-      setattr(self, self.__slots__[index_or_key], value)
-    elif isinstance(index_or_key, str):
-      if index_or_key not in self.__slots__:
-        raise KeyError(index_or_key)
-      setattr(self, index_or_key, value)
+  def __setitem__(self, index, value):
+    if hasattr(index, '__index__'):
+      setattr(self, self.__ifields__[index.__index__()].name, value)
+    elif isinstance(index, str):
+      setattr(self, index, value)
     else:
-      raise TypeError('expected int or str')
+      raise TypeError('cannot index with {} object'
+        .format(type(index).__name__))
 
-  def __eq__(self, other):
-    for key in self.__slots__:
-      try:
-        other_value = getattr(other, key)
-      except AttributeError:
-        return False
-      if getattr(self, key) != other_value:
-        return False
-    return True
+  def as_dict(self):
+    return dict((f.name, getattr(self, f.name)) for f in self.__ifields__)
 
-  def __setattr__(self, name, value):
-    if name in self.__slots__:
-      setter = getattr(self, '_set_' + name, None)
-      if callable(setter):
-        setter(value)
-        return
-    super(Record, self).__setattr__(name, value)
 
-  def __getattribute__(self, name):
-    if name != '__slots__' and name in self.__slots__:
-      getter = getattr(self, '_get_' + name, None)
-      if callable(getter):
-        return getter()
-    return super(Record, self).__getattribute__(name)
+def create_record(name, fields, bases=None):
+  """
+  Creates a new #Record subclass.
+  """
 
-  def items(self):
-    """
-    Iterator for the key-value pairs of the record.
-    """
+  if bases is None:
+    bases = (Record,)
+  elif isinstance(bases, type):
+    bases = (bases,)
+  if not any(issubclass(x, Record) for x in bases):
+    bases = bases = (Record,)
 
-    for key in self.__slots__:
-      yield key, getattr(self, key)
-
-  def keys(self):
-    """
-    Iterator for the member names of the record.
-    """
-
-    return iter(self.__slots__)
-
-  def values(self):
-    """
-    Iterator for the values of the object, like :meth:`__iter__`.
-    """
-
-    for key in self.__slots__:
-      yield getattr(self, key)
-
-  def _asdict(self):
-    return dict((k, getattr(self, k)) for k in self.__slots__)
-
-  @classmethod
-  def new(cls, __name, __fields, **defaults):
-    '''
-    Creates a new class that can represent a record with the
-    specified *fields*. This is equal to a mutable namedtuple.
-    The returned class also supports keyword arguments in its
-    constructor.
-
-    :param __name: The name of the Record.
-    :param __fields: A string or list of field names.
-    :param defaults: Default values for fields. The defaults
-      may list field names that haven't been listed in *fields*.
-    '''
-
-    name = __name
-    fields = __fields
-    fieldset = set(fields)
-
-    if isinstance(fields, str):
-      if ',' in fields:
-        fields = fields.split(',')
-      else:
-        fields = fields.split()
-    else:
-      fields = list(fields)
-
-    for key in defaults.keys():
-      if key not in fields:
-        fields.append(key)
-
-    class _record(cls):
-      __slots__ = fields
-      __defaults__ = defaults
-    _record.__name__ = name
-    return _record
+  module = inspect.currentframe().f_back.f_globals.get('__name__', __name__)
+  return type(name, bases, {'__fields__': fields, '__module__': module})

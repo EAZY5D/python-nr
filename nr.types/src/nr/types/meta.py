@@ -77,7 +77,7 @@ class InlineMetaclass(type):
     if '__metanew__' in dict:
       dict['__metanew__'] = staticmethod(dict['__metanew__'])
     if '__metainit__' in dict:
-      dict['__metainit__'] = staticmethod(dict['__metainit__'])
+      dict['__metainit__'] = classmethod(dict['__metainit__'])
 
     # TODO: Py3k: Add the `__class__` cell to the metanew and metainit
     #       methods so that super() can be used.

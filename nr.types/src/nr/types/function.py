@@ -58,8 +58,8 @@ def new_closure(cell_values):
   return tuple(map(new_closure_cell, cell_values))
 
 
-def replace(function, code=None, globals=None, name=None,
-            argdefs=None, closure=None):
+def copy_function(
+    function, code=None, globals=None, name=None, argdefs=None, closure=None):
   """
   Creates a new function object from the reference *function* where its
   members can be replaced using the specified arguments.
@@ -76,7 +76,10 @@ def replace(function, code=None, globals=None, name=None,
 
   function (types.FunctionType): A function object.
   code (code): The functions new code object.
-  globals (dict):
+  globals (dict): Function global variables.
+  name (str): Function name.
+  argdefs (tuple): Function defaults.
+  closure (closure): Function closure.
   """
 
   if not isinstance(function, types.FunctionType):
