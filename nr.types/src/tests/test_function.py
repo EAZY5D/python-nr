@@ -1,5 +1,5 @@
 
-from nr.types.function import replace
+from nr.types.function import copy_function
 import pytest
 
 
@@ -20,5 +20,5 @@ def test_has_closure():
   with pytest.raises(ClosureNotReplaced):
     func()
 
-  func = replace(func, closure={'value': 'foo'})
+  func = copy_function(func, closure={'value': 'foo'})
   func()

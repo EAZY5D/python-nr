@@ -1,5 +1,5 @@
 
-from nr.types import Sumtype
+from nr.types.sumtype import Sumtype
 
 
 def test_sumtypes():

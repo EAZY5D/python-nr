@@ -173,7 +173,7 @@ class CleanRecord(InlineMetaclassBase):
       fields = dict['__fields__']
     elif '__annotations__' in dict:
       fields = dict['__annotations__']
-      if isinstance(fields, dict):
+      if isinstance(fields, abc.Mapping):
         for key, value in iteritems(fields):
           fields[key] = (value, getattr(self, key, NotSet))
     else:

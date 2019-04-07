@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from nr.types.map import ChainMap, MapAsObject
+from nr.types.maps import ChainMap, MapAsObject
 
 
 def test_ChainDict():
