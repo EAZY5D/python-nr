@@ -19,8 +19,8 @@ setuptools.setup(
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
   install_requires = [
-    'nr.parse>=1.0.1',
-    'nr.types>=1.1.1',
+    'nr.parse>=1.0.2',
+    'nr.types>=2.0.0',
     'six',
     'termcolor',
   ],
