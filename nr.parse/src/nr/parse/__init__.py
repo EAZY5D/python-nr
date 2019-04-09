@@ -39,17 +39,18 @@ stream of #Token#s using a set of #Rule#s.
 __author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
 __version__ = '1.0.1'
 
-import string
-import nr.types
+from nr.types.record import create_record
+
 import os
 import re
+import string
 import sys
 
 eof = 'eof'
 string_types = (str,) if sys.version_info[0] == 3 else (str, unicode)
 
-Cursor = nr.types.Record.new('Cursor', 'index lineno colno')
-Token = nr.types.Record.new('Token', 'type cursor value string_repr')
+Cursor = create_record('Cursor', 'index lineno colno')
+Token = create_record('Token', 'type cursor value string_repr')
 
 
 class Scanner(object):
