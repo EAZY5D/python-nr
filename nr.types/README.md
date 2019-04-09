@@ -5,6 +5,18 @@ enhanced mappings, meta-programming tools and sumtypes.
 
 ## Changes
 
+### 2.0.0
+
+* Removed `nr.types.named` module
+* Updated `nr.types.record` module (combines both features of the old
+  `named` and `record` modules and more)
+* Rename `nr.types.map` to `nr.types.maps`
+* Rename `nr.types.set` to `nr.types.sets`
+* Rename `nr.types.function.replace()` to `~.copy_function()`
+* Add `nr.types.abc` as alias for `collections.abc` or `collections` (depending
+  on availability)
+* Add `nr.types.notset`
+
 ### 1.1.1 (2018-09-14)
 
 * Fix ValueIterableMap.__len__() and rename iterable argument to map
