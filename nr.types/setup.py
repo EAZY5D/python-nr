@@ -10,7 +10,7 @@ with io.open('requirements.txt') as fp:
 
 setuptools.setup(
   name = 'nr.types',
-  version = '1.1.1',
+  version = '2.0.0',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Anything related to Python datatypes.',
