@@ -18,5 +18,5 @@ setuptools.setup(
   packages = setuptools.find_packages('src'),
   package_dir = {'': 'src'},
   namespace_packages = ['nr'],
-  install_requires = ['nr.types>=1.0.0']
+  install_requires = ['nr.types>=2.0.0']
 )
