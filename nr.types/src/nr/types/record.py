@@ -69,7 +69,9 @@ class Field(object):
 def compile_fields(decl):
   """
   Compiles a fields declaration to an #OrderedDict mapping to #Field objects.
-  A fields declaration can be a dictionary or list.
+  A fields declaration can be a string, list or dictionary.
+
+  For a string: Comma or whitespace separated.
 
   For a list:
 
@@ -84,8 +86,12 @@ def compile_fields(decl):
   * Type
   """
 
+  # Split string into list of field names.
+  if isinstance(decl, str):
+    decl = [x.strip() for x in decl.split(',' if ',' in decl else ' ')]
+
   # Convert a mapping to the list form.
-  if isinstance(decl, abc.Mapping):
+  elif isinstance(decl, abc.Mapping):
     new_decl = []
     for key, value in iteritems(decl):
       if isinstance(value, tuple):
@@ -99,7 +105,9 @@ def compile_fields(decl):
 
   compiled_fields = OrderedDict()
   for item in decl:
-    if isinstance(item, Field):
+    if isinstance(item, str):
+      field = Field.with_name(item, None, NotSet)
+    elif isinstance(item, Field):
       field = item
     elif isinstance(item, tuple):
       if len(item) == 1:
@@ -199,30 +207,29 @@ class CleanRecord(InlineMetaclassBase):
       key=lambda x: x.create_index)
 
   def __init__(self, *args, **kwargs):
-    fields = self.__fields__
     type_name = type(self).__name__
 
     # Validate number of arguments.
     nargs = len(args) + len(kwargs)
-    if nargs > len(fields):
+    if nargs > len(self.__fields__):
       raise TypeError('{}() expected at most {} arguments, got {}'
-        .format(type_name, len(fields), nargs))
+        .format(type_name, len(self.__fields__), nargs))
 
     # Raise an exception for any unknown keyword arguments.
     for key in kwargs:
-      if key not in fields:
+      if key not in self.__fields__:
         raise TypeError('{}() unexpected keyword argument "{}"'
           .format(type_name, key))
 
     # Map positional arguments to keyword arguments.
-    for arg, (name, field) in zip(args, iteritems(fields)):
-      if name in kwargs:
+    for arg, field in zip(args, self.__ifields__):
+      if field.name in kwargs:
         raise TypeError('{}() got duplicate argument "{}"'
           .format(type_name, name))
-      kwargs[name] = arg
+      kwargs[field.name] = arg
 
     # Create attributes.
-    for key, field in iteritems(fields):
+    for key, field in iteritems(self.__fields__):
       value = kwargs.get(key, NotSet)
       if value is NotSet:
         if field.default is NotSet:
@@ -231,13 +238,43 @@ class CleanRecord(InlineMetaclassBase):
       setattr(self, key, value)
 
   def __repr__(self):
-    members = ', '.join('{}={!r}'.format(k, getattr(self, k)) for k in self.__fields__)
+    values = ((f.name, getattr(self, f.name)) for f in self.__ifields__)
+    members = ', '.join('{}={!r}'.format(k, v) for k, v in values)
     return '{}({})'.format(type(self).__name__, members)
 
 
-class Record(CleanRecord):
+class ToJSON(object):
   """
-  Adds namedtuple style methods like item access, iterating and #as_dict().
+  A mixin for the #CleanRecord class that adds a #to_json() method.
+  Different from the #as_dict() method in the #AsDict mixin, #to_json()
+  is called recursively on any of the attributes if they have a #to_json()
+  method.
+  """
+
+  def to_json(self):
+    result = {}
+    for key in self.__fields__:
+      value = getattr(self, key)
+      if hasattr(value, 'to_json'):
+        value = value.to_json()
+      # TODO @NiklasRosenstein handle lists and dictionaries.
+      result[key] = value
+    return result
+
+
+class AsDict(object):
+  """
+  A mixin for the #CleanRecord class that adds an #as_dict() method.
+  """
+
+  def as_dict(self):
+    return dict((k, getattr(self, k)) for k in self.__fields__)
+
+
+class Sequence(object):
+  """
+  A mixin for the #CleanRecord class that implements the mutable sequence
+  interface.
   """
 
   def __iter__(self):
@@ -265,21 +302,25 @@ class Record(CleanRecord):
       raise TypeError('cannot index with {} object'
         .format(type(index).__name__))
 
-  def as_dict(self):
-    return dict((f.name, getattr(self, f.name)) for f in self.__ifields__)
+
+class Record(CleanRecord, ToJSON, AsDict, Sequence):
+  pass
 
 
-def create_record(name, fields, bases=None):
+def create_record(name, fields, *mixins):
   """
-  Creates a new #Record subclass.
+  Creates a new #Record subclass. If at least one *mixin* is specified, it is
+  mixed into the parent class of the created #Record subclass. One of the
+  mixins can also be a separate #Record subclass in which case it is used
+  as the parent class instead of #Record.
   """
 
-  if bases is None:
-    bases = (Record,)
-  elif isinstance(bases, type):
-    bases = (bases,)
-  if not any(issubclass(x, Record) for x in bases):
-    bases = bases = (Record,)
+  base = next((x for x in mixins if isinstance(x, CleanRecord)), None)
+  if not base:
+    mixins = mixins + (Record,)
 
   module = inspect.currentframe().f_back.f_globals.get('__name__', __name__)
-  return type(name, bases, {'__fields__': fields, '__module__': module})
+  return type(name, mixins, {'__fields__': fields, '__module__': module})
+
+
+create = create_record
