@@ -11,6 +11,9 @@ import six
 import sys
 import termcolor
 
+__author__ = 'Niklas Rosenstein <rosensteinniklas@gmail.com>'
+__version__ = '1.0.0'
+
 PLUGINS_ENTRYPOINT = 'nr.powerline.plugins'
 COLORMODE_ASCII = 'ascii'
 COLORMODE_TRUECOLOR = 'truecolor'

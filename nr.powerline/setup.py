@@ -7,7 +7,7 @@ with io.open('README.md', encoding='utf8') as fp:
 
 setuptools.setup(
   name = 'nr.powerline',
-  version = '1.0.0.dev0',
+  version = '1.0.0',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
   description = 'Simple powerline module.',
