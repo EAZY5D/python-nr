@@ -9,8 +9,7 @@ jobs:
     docker:
       - image: circleci/python:3.6.1
     environment:
-      INSTALL_PYTHON_ENV: |
-        python3 -m venv venv
+      INSTALL_PYTHON_ENV1: python3 -m venv venv
 
     steps:
       - checkout
@@ -25,7 +24,9 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            $INSTALL_PYTHON_ENV
+            $INSTALL_PYTHON_ENV1
+            $INSTALL_PYTHON_ENV2
+            $INSTALL_PYTHON_ENV3
             . venv/bin/activate
             pip install -e nr.core[date] pytest
 
@@ -64,12 +65,8 @@ jobs:
     docker:
       - image: circleci/python:2.7.15
     environment:
-      INSTALL_PYTHON_ENV: |
-        echo INSTALL_PYTHON_ENV;
-        echo "Starting Pip install ...";
-        pip install virtualenv'
-        echo "Starting virtualenv install ...";
-        python -m virtualenv venv
+      INSTALL_PYTHON_ENV1: pip install virtualenv
+      INSTALL_PYTHON_ENV2: python -m virtualenv venv
 
 workflows:
   version: 2
