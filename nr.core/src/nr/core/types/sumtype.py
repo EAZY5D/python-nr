@@ -218,4 +218,5 @@ Sumtype.__addins__.append(AddIsMethods)
 
 
 import sys
+_module = sys.modules[__name__]  # For Python 2 we need to keep an explicit reference to the module
 sys.modules[__name__] = Sumtype
