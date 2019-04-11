@@ -54,3 +54,12 @@ jobs:
     <<: *test
     docker:
       - image: circleci/python:2.7.15
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test-3.6
+      - test-3.5
+      - test-3.4
+      - test-2.7
