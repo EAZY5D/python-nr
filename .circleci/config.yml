@@ -8,9 +8,9 @@ jobs:
     working_directory: ~/repo
     docker:
       - image: circleci/python:3.6.1
-        environment:
-          INSTALL_PYTHON_ENV: |
-            python3 -m venv venv
+    environment:
+      INSTALL_PYTHON_ENV: |
+        python3 -m venv venv
 
     steps:
       - checkout
@@ -63,9 +63,9 @@ jobs:
     <<: *test
     docker:
       - image: circleci/python:2.7.15
-        environment:
-          INSTALL_PYTHON_ENV: |
-            pip install virtualenv && python install -m virtualenv venv
+    environment:
+      INSTALL_PYTHON_ENV: |
+        pip install virtualenv && python install -m virtualenv venv
 
 workflows:
   version: 2
