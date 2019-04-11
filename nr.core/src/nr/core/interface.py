@@ -24,6 +24,7 @@ This module allows you to declare and implement interfaces similar to
 #zope.interface, but with some extras.
 """
 
+from __future__ import absolute_import
 import itertools
 import nr.core.types.meta as _meta
 import sys
