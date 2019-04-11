@@ -26,7 +26,7 @@ instantiated by passing the generic arguments to the type via the bracket
 sytax.
 
 ```python
-import nr.types import generic
+import nr.core import generic
 
 class HashDict(generic.Generic['key_hash']):
 

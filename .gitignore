@@ -2,5 +2,6 @@
 *.egg-info
 dist/
 .venv/
+.venv[23]/
 .vscode/
 .DS_Store

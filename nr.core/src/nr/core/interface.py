@@ -32,9 +32,10 @@ import types
 
 class _Member(object):
 
-  def __init__(self, interface, name):
+  def __init__(self, interface, name, hidden=False):
     self.interface = interface
     self.name = name
+    self.hidden = hidden
 
   def __repr__(self):
     result = '<{} {!r}'.format(type(self).__name__, self.name)
@@ -51,23 +52,36 @@ class _Member(object):
 
 class Method(_Member):
 
-  def __init__(self, interface, name, impl=None, final=False):
+  def __init__(self, interface, name, impl=None, final=False, hidden=False):
     super(Method, self).__init__(interface, name)
     self.impl = impl
     self.final = final
+    self.hidden = hidden
 
   def __call__(self, *a, **kw):
     if self.impl:
       return self.impl(*a, **kw)
     return None
 
-  @staticmethod
-  def is_candidate(name, value):
-    if name.startswith('_') and not name.endswith('_'):
-      return False
-    if name in ('__new__', '__init__', '__constructed__'):
+  @classmethod
+  def is_candidate(cls, name, value):
+    if name.startswith('_') and not name.endswith('_'):  # Private function
       return False
     return isinstance(value, types.FunctionType)
+
+  @classmethod
+  def wrap_candidate(cls, interface, name, value):
+    if cls.is_candidate(name, value):
+      # We don't want these functions to be an actual "member" of the interface
+      # API as they can be implemented for every interface and not collide.
+      hidden = name in ('__new__', '__init__', '__constructed__')
+      # If it's one of the hidden methods, they also act as the "default"
+      # implementation because we actually want to call them independently
+      # of potential overrides by the implementation.
+      impl = value if getattr(value, '__is_default__', hidden) else None
+      final = getattr(value, '__is_final__', False)
+      return Method(interface, name, impl, final, hidden)
+    return None
 
 
 class Attribute(_Member):
@@ -148,6 +162,12 @@ class Property(_Member):
     return isinstance(value, property)
 
   @classmethod
+  def wrap_candidate(cls, interface, name, value):
+    if cls.is_candidate(name, value):
+      return Property.from_python_property(interface, name, value)
+    return None
+
+  @classmethod
   def from_python_property(cls, interface, name, value):
     assert isinstance(value, property), type(value)
     if value.fget and getattr(value.fget, '__is_default__', False):
@@ -189,13 +209,12 @@ class Interface(_meta.InlineMetaclassBase):
       if isinstance(value, _Member) and not value.is_bound:
         value.interface = self
         value.name = key
-      elif Method.is_candidate(key, value):
-        impl = value if getattr(value, '__is_default__', False) else None
-        final = getattr(value, '__is_final__', False)
-        setattr(self, key, Method(self, key, impl, final))
-      elif Property.is_candidate(key, value):
-        prop = Property.from_python_property(self, key, value)
-        setattr(self, key, prop)
+        continue
+      member = Method.wrap_candidate(self, key, value)
+      if member is None:
+        member = Property.wrap_candidate(self, key, value)
+      if member is not None:
+        setattr(self, key, member)
 
     return self
 
@@ -214,7 +233,7 @@ def is_interface(obj):
   return isinstance(obj, type) and issubclass(obj, Interface)
 
 
-def members_of(interface):
+def members_of(interface, include_hidden=False):
   """
   Returns a generator that yields all members of the specified interface.
   Basically, that is all member functions of the interface.
@@ -225,7 +244,7 @@ def members_of(interface):
 
   for name in dir(interface):
     value = getattr(interface, name)
-    if isinstance(value, _Member):
+    if isinstance(value, _Member) and (include_hidden or not value.hidden):
       yield value
 
 

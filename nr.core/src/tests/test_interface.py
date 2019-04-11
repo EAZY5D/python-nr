@@ -1,5 +1,5 @@
 
-import nr.core.types.interface as interface
+import nr.core.interface as interface
 import pytest
 
 

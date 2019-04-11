@@ -31,7 +31,8 @@ __all__ = [
 
 import collections
 import six
-from . import abc, generic
+from . import abc
+from nr.core import generic
 
 try:
   from collections import OrderedDict
