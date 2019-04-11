@@ -65,7 +65,7 @@ jobs:
       - image: circleci/python:2.7.15
     environment:
       INSTALL_PYTHON_ENV: |
-        pip install virtualenv && python -m virtualenv venv
+        echo $INSTALL_PYTHON_ENV && pip install virtualenv && python -m virtualenv venv
 
 workflows:
   version: 2
