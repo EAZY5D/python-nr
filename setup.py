@@ -23,35 +23,20 @@ import os
 import sys
 
 from functools import partial
-from pip.req import parse_requirements
 from setuptools import setup, find_packages
 
-# parse_requirements() interface has changed in Pip 6.0
-if pip.__version__ >= '6.0':
-  parse_requirements = partial(parse_requirements, session=pip.download.PipSession())
-
 def readme():
-  if os.path.isfile('README.md') and any('dist' in x for x in sys.argv[1:]):
-    if os.system('pandoc -s README.md -o README.rst') != 0:
-      print('-----------------------------------------------------------------')
-      print('WARNING: README.rst could not be generated, pandoc command failed')
-      print('-----------------------------------------------------------------')
-      if sys.stdout.isatty():
-        input("Enter to continue... ")
-    else:
-      print("Generated README.rst with Pandoc")
+  with open('README.md') as fp:
+    return fp.read()
 
-  if os.path.isfile('README.rst'):
-    with open('README.rst') as fp:
-      return fp.read()
-  return ''
 
 setup(
   name = 'nr',
-  version = '1.4.10',
+  version = '1.4.11',
   license = 'MIT',
   description = 'A Collection of small Python libraries.',
   long_description = readme(),
+  long_description_content_type = 'text/markdown',
   url = 'https://github.com/NiklasRosenstein/py-nr',
   author = 'Niklas Rosenstein',
   author_email = 'rosensteinniklas@gmail.com',
